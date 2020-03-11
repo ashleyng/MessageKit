@@ -303,7 +303,7 @@ extension ChatViewController: MessageLabelDelegate {
 extension ChatViewController: InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         // Here we can parse for which substrings were autocompleted
-        let attributedText = messageInputBar.inputTextView.attributedText!
+        let attributedText = inputBar.inputTextView.attributedText!
         let range = NSRange(location: 0, length: attributedText.length)
         attributedText.enumerateAttribute(.autocompleted, in: range, options: []) { (_, range, _) in
 
@@ -313,18 +313,19 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         }
 
         let components = inputBar.inputTextView.components
-        messageInputBar.inputTextView.text = String()
-        messageInputBar.invalidatePlugins()
-
+        inputBar.inputTextView.text = String()
+        inputBar.invalidatePlugins()
         // Send button activity animation
-        messageInputBar.sendButton.startAnimating()
-        messageInputBar.inputTextView.placeholder = "Sending..."
+        inputBar.sendButton.startAnimating()
+        inputBar.inputTextView.placeholder = "Sending..."
+        // Resign first responder for iPad split view
+        inputBar.inputTextView.resignFirstResponder()
         DispatchQueue.global(qos: .default).async {
             // fake send request task
             sleep(1)
             DispatchQueue.main.async { [weak self] in
-                self?.messageInputBar.sendButton.stopAnimating()
-                self?.messageInputBar.inputTextView.placeholder = "Aa"
+                inputBar.sendButton.stopAnimating()
+                inputBar.inputTextView.placeholder = "Aa"
                 self?.insertMessages(components)
                 self?.messagesCollectionView.scrollToBottom(animated: true)
             }
