@@ -92,14 +92,19 @@ internal extension MessagesViewController {
         let keyboardEndFrame = view.convert(keyboardEndFrameInScreenCoords, from: view.window)
 
         let newBottomInset = requiredScrollViewBottomInset(forKeyboardFrame: keyboardEndFrame)
+        var tabBarOffset: CGFloat = 0
+        if let tabBarHeight = tabBarController?.tabBar.frame.height {
+            print("ASHLEYNG set tab bar height")
+            tabBarOffset = tabBarHeight
+        }
         let differenceOfBottomInset = newBottomInset - messageCollectionViewBottomInset
 
         if maintainPositionOnKeyboardFrameChanged && differenceOfBottomInset != 0 {
-            let contentOffset = CGPoint(x: messagesCollectionView.contentOffset.x, y: messagesCollectionView.contentOffset.y + differenceOfBottomInset)
+            let contentOffset = CGPoint(x: messagesCollectionView.contentOffset.x, y: messagesCollectionView.contentOffset.y + differenceOfBottomInset + tabBarOffset)
             messagesCollectionView.setContentOffset(contentOffset, animated: false)
         }
 
-        messageCollectionViewBottomInset = newBottomInset
+        messageCollectionViewBottomInset = newBottomInset + tabBarOffset
     }
 
     // MARK: - Inset Computation
